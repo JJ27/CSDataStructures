@@ -11,7 +11,7 @@ public class GuitarHero {
     static ArrayList<String> pieces = new ArrayList<String>();
     static int measures;
     static String[][] curr = new String[5][6];
-    static String[][] guitarnotes = {{"E", "A", "D", "G", "B", "E"}, {"F", "A#", "D#", "G#", "C", "F"}, {"F#", "B", "E", "A", "C#", "F#"}, {"G", "C", "F", "A#", "D", "G"}, {"G#", "C#", "F#", "B", "D#", "G#"}};
+    static String[][] guitarnotes = {{"E", "F", "D", "G", "B", "E"}, {"F", "A#", "D#", "G#", "C", "F"}, {"F#", "B", "E", "A", "C#", "F#"}, {"G", "C", "F", "A#", "D", "G"}, {"G#", "C#", "F#", "B", "D#", "G#"}};
     public GuitarHero(){
         File filename = new File("GuitarSong.txt");
         try {
@@ -51,13 +51,15 @@ public class GuitarHero {
         ArrayList<String> noteslist = new ArrayList<String>(Arrays.asList(array));
         noteslist.add("Measure");
         ArrayList<ArrayList<String>> grid = new ArrayList<ArrayList<String>>();
-        grid.add(noteslist);
         ArrayList<String> curradd = new ArrayList<String>(Collections.nCopies(60, " "));
         for(int i = 0; i < notes.length(); i+=2){
             String curr = notes.substring(i, i+2);
             int note = (6 * Integer.parseInt(curr.substring(0,1))) + Integer.parseInt(curr.substring(1));
+            System.out.println(note);
             curradd.set(note, "O");
         }
+        grid.add(noteslist);
+        grid.add(curradd);
         grid = transpose(grid);
         print(grid);
     }
@@ -70,9 +72,11 @@ public class GuitarHero {
         }
     }
     public static void print(ArrayList<ArrayList<String>> arr){
-        for(int i = 0; i < arr.size(); i++){
+        for(int i = arr.size()-1; i > -1; i--){
             for(int j = 0; j < arr.get(i).size(); j++){
                 System.out.print(arr.get(i).get(j) + "\t");
+                if(j == 0)
+                    System.out.print("\t");
             }
             System.out.println();
         }
@@ -82,7 +86,7 @@ public class GuitarHero {
     public static String[][] transpose(String[][] array) {
         String[][] transposed = new String[array[0].length][array.length];
         for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[i].length; j++) {
+            for (int j = 0; j < array[0].length; j++) {
                 transposed[j][i] = array[i][j];
             }
         }
@@ -92,14 +96,7 @@ public class GuitarHero {
     //transpose the rows and columns of a 2D ArrayList
     public static ArrayList<ArrayList<String>> transpose(ArrayList<ArrayList<String>> orig) {
         String[][] array = orig.stream().map(u -> u.toArray(new String[0])).toArray(String[][]::new);
-
-        String[][] transposed = new String[array[0].length][array.length];
-        for (int i = 0; i < array.length; i++) {
-            for (int j = 0; j < array[i].length; j++) {
-                transposed[j][i] = array[i][j];
-            }
-        }
-        return arrayToArrayList(transposed);
+        return arrayToArrayList(transpose(array));
     }
 
     //2D Array to 2D ArrayList
