@@ -1,5 +1,7 @@
-package com.sebastiandero.kata;
-
+import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -7,9 +9,10 @@ import java.util.stream.Collectors;
 
 public class LiftProblem {
     private static int[][] queues;
+    static ArrayList<String> pieces;
 
     public static int[] theLift(final int[][] queues, final int capacity) {
-        TheLift.queues = queues;
+        LiftProblem.queues = queues;
 
         Lift lift = new Lift(capacity);
 
@@ -17,6 +20,68 @@ public class LiftProblem {
             lift.move();
         }
         return lift.floorHistory.stream().mapToInt(i -> i).toArray();
+    }
+
+    public static void main(String[] args){
+        LiftProblem p = new LiftProblem();
+        pieces.remove(0);
+        for(String s: pieces){
+            //queues = new int[][];
+            String prematrix = "{";
+            String[] split = s.split("q");
+            int floors = Integer.parseInt(split[0]);
+            for(int i = 1; i <= floors; i++){
+               prematrix += "{" + split[i] + "},";
+            }
+            prematrix = prematrix.substring(0, prematrix.length() - 1);
+            prematrix += "}";
+            System.out.println(prematrix);
+            //queues = Lift.stringTo2D(prematrix);
+            print(primate(Lift.intto2D(prematrix)));
+        }
+    }
+
+    public static void print(int[][] arr){
+        for(int i = 0; i < arr.length; i++){
+            for(int j = 0; j < arr[i].length; j++){
+                System.out.print(arr[i][j] + "\t");
+            }
+            System.out.println();
+        }
+    }
+
+    public static int[][] primate(Integer[][] arr){
+        int[][] arr2 = new int[arr.length][arr[0].length];
+        for(int i = 0; i < arr.length; i++){
+            for(int j = 0; j < arr[i].length; j++){
+                arr2[i][j] = arr[i][j].intValue();
+            }
+        }
+        return arr2;
+    }
+
+    public static void print(String[][] arr){
+        for(int i = 0; i < arr.length; i++){
+            for(int j = 0; j < arr[i].length; j++){
+                System.out.print(arr[i][j] + "\t");
+            }
+            System.out.println();
+        }
+    }
+
+    public LiftProblem(){
+        File filename = new File("TheLiftFile.txt");
+        try {
+            BufferedReader input = new BufferedReader(new FileReader(filename));
+            String text;
+            String e = "";
+            while ((text = input.readLine()) != null) {
+                e += text + "q";
+            }
+            pieces = new ArrayList<String>(Arrays.asList(e.split("Floors: ")));
+        } catch (IOException io) {
+            System.err.println("File error");
+        }
     }
 
     private static boolean allArrived(Lift lift) {
@@ -122,6 +187,27 @@ public class LiftProblem {
                 }
             }
             changeFloor(0);
+        }
+
+        public static Integer[][] intto2D(String str){
+            String[][] s = Arrays.stream(str.substring(2, str.length() - 2).split("\\},\\{")).map(e -> Arrays.stream(e.split("\\s*,\\s*")).toArray(String[]::new)).toArray(String[][]::new);
+            //int[][] arr = new int[s.length][s[0].length];
+            ArrayList<ArrayList<Integer>> arr = new ArrayList<ArrayList<Integer>>();
+            for(int i = 0; i < s.length; i++){
+                for(int j = 0; j < s[i].length; j++){
+                    if(j == 0){
+                        arr.add(new ArrayList<Integer>(Arrays.asList(new Integer[s[i].length])));
+                    }
+                    try {
+                        System.out.println(i + " " + j);
+                        arr.get(i).set(j, Integer.parseInt(s[i][j]));
+                    } catch (NumberFormatException e) {
+                        arr.get(i).set(j, -1);
+                    }
+                }
+            }
+            Integer[][] stringArray = arr.stream().map(u -> u.toArray(new Integer[0])).toArray(Integer[][]::new);
+            return stringArray;
         }
 
         private boolean smartDown() {
