@@ -2,19 +2,20 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class LiftProblem {
-    private static int[][] queues;
+    private static ArrayList<ArrayList<Integer>> queues;
     static ArrayList<String> pieces;
 
-    public static int[] theLift(final int[][] queues, final int capacity) {
+    public static int[] theLift(final ArrayList<ArrayList<Integer>> queues, final int capacity, final int floors) {
         LiftProblem.queues = queues;
 
-        Lift lift = new Lift(capacity);
+        Lift lift = new Lift(capacity, floors);
 
         while (!allArrived(lift)) {
             lift.move();
@@ -26,6 +27,7 @@ public class LiftProblem {
         LiftProblem p = new LiftProblem();
         pieces.remove(0);
         for(String s: pieces){
+            System.out.println(s);
             //queues = new int[][];
             String prematrix = "{";
             String[] split = s.split("q");
@@ -33,11 +35,10 @@ public class LiftProblem {
             for(int i = 1; i <= floors; i++){
                prematrix += "{" + split[i] + "},";
             }
+            int capacity = Integer.parseInt(split[split.length - 1].substring(10));
             prematrix = prematrix.substring(0, prematrix.length() - 1);
             prematrix += "}";
-            System.out.println(prematrix);
-            //queues = Lift.stringTo2D(prematrix);
-            print(primate(Lift.intto2D(prematrix)));
+            System.out.println(theLift(Lift.intto2D(prematrix), capacity, floors));
         }
     }
 
@@ -69,6 +70,35 @@ public class LiftProblem {
         }
     }
 
+    //method to print array
+    public static void printarr(ArrayList<Integer> arr){
+        for(int i = 0; i < arr.size(); i++){
+            System.out.print(arr.get(i) + "\t");
+        }
+        System.out.println();
+    }
+
+    public static void print(ArrayList<ArrayList<Integer>> arr){
+        System.out.println("Start:");
+        for(int i = 0; i < arr.size(); i++){
+            for(int j = 0; j < arr.get(i).size(); j++){
+                System.out.print(arr.get(i).get(j) + "\t");
+            }
+            System.out.println();
+        }
+    }
+
+    public static boolean check(){
+        for(int i = 0; i < queues.size(); i++){
+            for(Integer j: queues.get(i)){
+                if(j != -1 && i != 0){
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+
     public LiftProblem(){
         File filename = new File("TheLiftFile.txt");
         try {
@@ -85,9 +115,9 @@ public class LiftProblem {
     }
 
     private static boolean allArrived(Lift lift) {
-        for (int i = 0; i < queues.length; i++) {
-            for (int j = 0; j < queues[i].length; j++) {
-                if (queues[i][j] != i) {
+        for (int i = 0; i < queues.size(); i++) {
+            for (int j = 0; j < queues.get(i).size(); j++) {
+                if (queues.get(i).get(j) != i) {
                     return false;
                 }
             }
@@ -96,13 +126,13 @@ public class LiftProblem {
     }
 
     private static void push(int person, int floor) {
-        List<Integer> people = Arrays.stream(queues[floor]).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+        List<Integer> people = queues.get(floor);
         people.add(person);
-        queues[floor] = people.stream().mapToInt(i -> i).toArray();
+        queues.set(floor, new ArrayList<Integer>(people));
     }
 
     private static int pop(int floor, int index) {
-        List<Integer> people = Arrays.stream(queues[floor]).collect(ArrayList::new, ArrayList::add, ArrayList::addAll);
+        List<Integer> people = queues.get(floor);
         int person;
         if (people.size() == 0) {
             person = -1;
@@ -110,7 +140,7 @@ public class LiftProblem {
             person = people.get(index);
             people.set(index, -1);
         }
-        queues[floor] = people.stream().filter(i -> i >= 0).mapToInt(i -> i).toArray();
+        queues.set(floor,new ArrayList<Integer>(people));
         return person;
     }
 
@@ -120,36 +150,48 @@ public class LiftProblem {
         private List<Integer> floorHistory;
         private int floor = -1;
         private boolean travelingUp = true;
+        private int floors;
 
-        Lift(int capacity) {
+        Lift(int capacity, int floors) {
             this.capacity = capacity;
             passengers = new ArrayList<>();
             floorHistory = new ArrayList<>();
+            this.floors = floors;
             changeFloor(0);
         }
 
         void move() {
-            deliverPassengers();
-            pickupPassengers();
+            if(!(deliverPassengers() | pickupPassengers()) && floor != floors-1 && floors != 0) {
+                try {
+                    floorHistory.remove(floorHistory.size() - 1);
+                } catch (IndexOutOfBoundsException e) {}
+            }
             goToNextFloor();
         }
 
-        private void deliverPassengers() {
+        private boolean deliverPassengers() {
             List<Integer> arrivedPassengers = passengers.stream().filter(destination -> floor == destination).collect(Collectors.toList());
-            passengers.removeAll(arrivedPassengers);
-            for (Integer passenger : arrivedPassengers) {
+            arrivedPassengers.forEach(passenger -> {
+                passengers.remove(passenger);
                 push(passenger, floor);
+            });
+            if(arrivedPassengers.size() > 0){
+                return true;
             }
+            return false;
         }
 
-        private void pickupPassengers() {
-            for (int i = 0; i < queues[floor].length && capacity > passengers.size(); i++) {
-                int destination = queues[floor][i];
+        private boolean pickupPassengers() {
+            boolean flag = false;
+            for (int i = 0; i < queues.get(floor).size() && capacity > passengers.size(); i++) {
+                int destination = queues.get(floor).get(i);
                 if (isGoingSameWay(destination, floor)) {
                     passengers.add(pop(floor, i));
+                    flag = true;
                     i--;//decrease because of in use change of array
                 }
             }
+            return flag;
         }
 
         private void goToNextFloor() {
@@ -186,28 +228,34 @@ public class LiftProblem {
                     }
                 }
             }
-            changeFloor(0);
+            if(floor != 0){
+                changeFloor(0);
+            } else{
+                floorHistory.add(0);
+            }
         }
 
-        public static Integer[][] intto2D(String str){
+        public static ArrayList<ArrayList<Integer>> intto2D(String str){
             String[][] s = Arrays.stream(str.substring(2, str.length() - 2).split("\\},\\{")).map(e -> Arrays.stream(e.split("\\s*,\\s*")).toArray(String[]::new)).toArray(String[][]::new);
             //int[][] arr = new int[s.length][s[0].length];
+            print(s);
             ArrayList<ArrayList<Integer>> arr = new ArrayList<ArrayList<Integer>>();
             for(int i = 0; i < s.length; i++){
                 for(int j = 0; j < s[i].length; j++){
                     if(j == 0){
-                        arr.add(new ArrayList<Integer>(Arrays.asList(new Integer[s[i].length])));
+                        arr.add(new ArrayList<Integer>());
                     }
                     try {
                         System.out.println(i + " " + j);
-                        arr.get(i).set(j, Integer.parseInt(s[i][j]));
-                    } catch (NumberFormatException e) {
-                        arr.get(i).set(j, -1);
+                        arr.get(i).add(Integer.parseInt(s[i][j]));
+                    } catch (Exception e) {
+                        continue;
                     }
                 }
             }
-            Integer[][] stringArray = arr.stream().map(u -> u.toArray(new Integer[0])).toArray(Integer[][]::new);
-            return stringArray;
+            System.out.println("Finished");
+            print(arr);
+            return arr;
         }
 
         private boolean smartDown() {
@@ -220,7 +268,7 @@ public class LiftProblem {
         }
 
         private boolean smartUp() {
-            for (int i = queues.length - 1; i >= floor; i--) {
+            for (int i = queues.size() - 1; i >= floor; i--) {
                 if (moveIfAnyGoingDifferentWay(i)) {
                     return true;
                 }
@@ -241,7 +289,7 @@ public class LiftProblem {
         }
 
         private boolean moveUpIfUseful() {
-            for (int i = floor + 1; i < queues.length; i++) {
+            for (int i = floor + 1; i < queues.size(); i++) {
                 if (moveIfPassengerDestination(i)) {
                     return true;
                 }
@@ -261,8 +309,8 @@ public class LiftProblem {
         }
 
         private boolean moveIfAnyGoingSameWay(int floor) {
-            for (int i = 0; i < queues[floor].length; i++) {
-                if (isGoingSameWay(queues[floor][i], floor)) {
+            for (int i = 0; i < queues.get(floor).size(); i++) {
+                if (isGoingSameWay(queues.get(floor).get(i), floor)) {
                     changeFloor(floor);
                     return true;
                 }
@@ -271,8 +319,8 @@ public class LiftProblem {
         }
 
         private boolean moveIfAnyGoingDifferentWay(int floor) {
-            for (int i = 0; i < queues[floor].length; i++) {
-                if (queues[floor][i] != floor && !isGoingSameWay(queues[floor][i], floor)) {
+            for (int i = 0; i < queues.get(floor).size(); i++) {
+                if (queues.get(floor).get(i) != floor && !isGoingSameWay(queues.get(floor).get(i), floor)) {
                     changeFloor(floor);
                     travelingUp = !travelingUp;
                     return true;
@@ -290,6 +338,12 @@ public class LiftProblem {
         }
 
         private void changeFloor(int floor) {
+            printarr(new ArrayList<Integer>(floorHistory));
+            //print(queues);
+            if(check()){
+                System.out.println("Done!");
+                System.exit(0);
+            }
             if (this.floor == floor) {
                 return;
             }
@@ -300,7 +354,7 @@ public class LiftProblem {
             }
             this.floor = floor;
             floorHistory.add(floor);
-            if (floor == queues.length - 1) {
+            if (floor == queues.size() - 1) {
                 travelingUp = false;
             }
             if (floor == 0) {
