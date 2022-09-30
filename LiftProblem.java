@@ -33,7 +33,7 @@ public class LiftProblem {
             String[] split = s.split("q");
             int floors = Integer.parseInt(split[0]);
             for(int i = 1; i <= floors; i++){
-               prematrix += "{" + split[i] + "},";
+                prematrix += "{" + split[i] + "},";
             }
             int capacity = Integer.parseInt(split[split.length - 1].substring(10));
             prematrix = prematrix.substring(0, prematrix.length() - 1);
@@ -363,6 +363,3 @@ public class LiftProblem {
         }
     }
 }
-
-
-
