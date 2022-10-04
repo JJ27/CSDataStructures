@@ -1,3 +1,5 @@
+package FirstSix;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,7 +10,7 @@ public class Cube {
     static int[] dice = {1,2,3,4,5,6};
     ArrayList<String> strings = new ArrayList<String>();
     public Cube(){
-        File filename = new File("CubeInput.txt");
+        File filename = new File("FirstSix/CubeInput.txt");
         try {
             BufferedReader input = new BufferedReader(new FileReader(filename));
             String text;

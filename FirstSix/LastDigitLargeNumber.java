@@ -1,15 +1,16 @@
+package FirstSix;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.math.BigInteger;
 import java.util.ArrayList;
 
 public class LastDigitLargeNumber {
     ArrayList<String> numbers = new ArrayList<String>();
     public LastDigitLargeNumber(){
-        File filename = new File("LargeNumberPracticeSet.txt");
+        File filename = new File("FirstSix/LargeNumberPracticeSet.txt");
         try {
             BufferedReader input = new BufferedReader(new FileReader(filename));
             String text;

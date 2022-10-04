@@ -1,3 +1,5 @@
+package FirstSix;
+
 import java.io.*;
 
 public class Template{

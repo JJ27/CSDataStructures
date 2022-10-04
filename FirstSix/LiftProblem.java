@@ -1,8 +1,9 @@
+package FirstSix;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -100,7 +101,7 @@ public class LiftProblem {
     }
 
     public LiftProblem(){
-        File filename = new File("TheLiftFile.txt");
+        File filename = new File("FirstSix/TheLiftFile.txt");
         try {
             BufferedReader input = new BufferedReader(new FileReader(filename));
             String text;

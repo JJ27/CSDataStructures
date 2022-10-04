@@ -1,3 +1,5 @@
+package FirstSix;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -7,7 +9,7 @@ import java.util.ArrayList;
 public class Reducer {
     ArrayList<String> numbers = new ArrayList<String>();
     public Reducer(){
-        File filename = new File("Reducer.txt");
+        File filename = new File("FirstSix/Reducer.txt");
         try {
             BufferedReader input = new BufferedReader(new FileReader(filename));
             String text;

@@ -1,10 +1,10 @@
+package FirstSix;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.*;
-import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 public class GuitarHero {
@@ -13,7 +13,7 @@ public class GuitarHero {
     static String[][] curr = new String[5][6];
     static String[][] guitarnotes = {{"E", "F", "D", "G", "B", "E"}, {"F", "A#", "D#", "G#", "C", "F"}, {"F#", "B", "E", "A", "C#", "F#"}, {"G", "C", "F", "A#", "D", "G"}, {"G#", "C#", "F#", "B", "D#", "G#"}};
     public GuitarHero(){
-        File filename = new File("GuitarSong.txt");
+        File filename = new File("FirstSix/GuitarSong.txt");
         try {
             BufferedReader input = new BufferedReader(new FileReader(filename));
             String text;

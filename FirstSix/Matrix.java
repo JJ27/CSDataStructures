@@ -1,3 +1,5 @@
+package FirstSix;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -8,7 +10,7 @@ import java.util.Arrays;
 public class Matrix {
     static ArrayList<String> pieces = new ArrayList<String>();
     public Matrix(){
-        File filename = new File("MatrixFile.txt");
+        File filename = new File("FirstSix/MatrixFile.txt");
         try {
             BufferedReader input = new BufferedReader(new FileReader(filename));
             String text;
