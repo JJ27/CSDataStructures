@@ -6,12 +6,16 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 
 public class MazeProgram extends JPanel implements KeyListener {
     JFrame frame;
     String[][] maze;
     Hero hero;
     int endR, endC;
+
+    ArrayList<Wall> walls = new ArrayList<Wall>();
+    boolean in2D;
     public MazeProgram(){
         frame = new JFrame("Maze");
         frame.add(this);
@@ -31,6 +35,13 @@ public class MazeProgram extends JPanel implements KeyListener {
 
     @Override
     public void keyPressed(KeyEvent e) {
+        if(e.getKeyCode() == KeyEvent.VK_SPACE){
+            in2D = !in2D;
+        } else if(e.getKeyCode() == KeyEvent.VK_BACK_SPACE){
+            System.exit(0);
+        }
+        if(!in2D)
+            set3D();
         hero.move(e.getKeyCode());
         repaint();
     }
@@ -157,9 +168,47 @@ public class MazeProgram extends JPanel implements KeyListener {
             System.out.println(r + " " + c);
         }
     }
+    //prints 2D array
+    public void printMaze(){
+        for(int i = 0; i < maze.length; i++){
+            for(int j = 0; j < maze[i].length; j++){
+                System.out.print(maze[i][j]);
+            }
+            System.out.println();
+        }
+    }
 
     public static void main(String[] args) {
         new MazeProgram();
+    }
+
+    public class Wall{
+        int[] x;
+        int[] y;
+        public Wall(int[] x, int[] y){
+            this.x = x;
+            this.y = y;
+        }
+
+        public Polygon getPoly(){
+            return new Polygon(x, y, 4);
+        }
+    }
+
+    public void set3D(){
+        walls.clear();
+        for(int i = 0; i < 5; i++){
+            int[] x = {100 + 50*i, 150 + 50*i, 150 + 50*i, 100 + 50*i};
+            int[] y = {100 + 50*i, 100 + 50*i, 550-50*i, 550-50*i};
+            walls.add(new Wall(x, y));
+        }
+        switch(hero.getDirection()){
+            case 'N':
+                for(int i = 0; i < 5; i++){
+                    a
+                }
+                break;
+        }
     }
 
     @Override
@@ -168,17 +217,25 @@ public class MazeProgram extends JPanel implements KeyListener {
         g.setColor(new Color(100,150,0));
         g.fillRect(0,0,800,800);
         g.setColor(Color.WHITE);
-        //iterate through maze
-        for(int i = 0; i < maze.length; i++){
-            for(int j = 0; j < maze[i].length; j++){
-                if(maze[i][j].equals("*")){
-                    g.setColor(Color.BLACK);
-                    g.fillRect(j*10, i*10, 10, 10);
+        if(in2D) {
+            for (int i = 0; i < maze.length; i++) {
+                for (int j = 0; j < maze[i].length; j++) {
+                    if (maze[i][j].equals("*")) {
+                        g.setColor(Color.BLACK);
+                        g.fillRect(j * 10, i * 10, 10, 10);
+                    }
                 }
             }
+            g.setColor(Color.WHITE);
+            g.fillOval(hero.getC() * 10, hero.getR() * 10, 10, 10);
+        } else{
+            for(Wall w: walls){
+                g.setColor(Color.BLACK);
+                g.fillPolygon(w.getPoly());
+                g.setColor(Color.WHITE);
+                g.drawPolygon(w.getPoly());
+            }
         }
-        g.setColor(Color.WHITE);
-        g.fillOval(hero.getC()*10, hero.getR()*10, 10, 10);
     }
 
     public void setMaze(){
