@@ -182,6 +182,12 @@ public class MazeProgram extends JPanel implements KeyListener {
         new MazeProgram();
     }
 
+    public void leftWall(int i){
+        int[] x = {100 + 50*i, 150 + 50*i, 150 + 50*i, 100 + 50*i};
+        int[] y = {100 + 50*i, 100 + 50*i, 550-50*i, 550-50*i};
+        walls.add(new Wall(x, y));
+    }
+
     public class Wall{
         int[] x;
         int[] y;
@@ -196,18 +202,48 @@ public class MazeProgram extends JPanel implements KeyListener {
     }
 
     public void set3D(){
-        walls.clear();
+        //walls.clear();
+        walls = new ArrayList<Wall>();
         for(int i = 0; i < 5; i++){
-            int[] x = {100 + 50*i, 150 + 50*i, 150 + 50*i, 100 + 50*i};
-            int[] y = {100 + 50*i, 100 + 50*i, 550-50*i, 550-50*i};
-            walls.add(new Wall(x, y));
+            leftWall(i);
         }
-        switch(hero.getDirection()){
-            case 'N':
-                for(int i = 0; i < 5; i++){
-                    a
+        int r = hero.getR();
+        int c = hero.getC();
+        for(int i = 0; i < 5; i++){
+            try {
+                switch (hero.getDirection()) {
+                    case 'E':
+                        if (maze[hero.getR() - 1][hero.getC() + i].equals("*")) {
+                            int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
+                            int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
+                            walls.add(new Wall(x, y));
+                        }
+                        break;
+                    case 'N':
+                        if (maze[hero.getR() - i][hero.getC() - 1].equals("*")) {
+                            int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
+                            int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
+                            walls.add(new Wall(x, y));
+                        }
+                        break;
+                    case 'S':
+                        if (maze[hero.getR() + i][hero.getC() + 1].equals("*")) {
+                            int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
+                            int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
+                            walls.add(new Wall(x, y));
+                        }
+                        break;
+                    case 'W':
+                        if (maze[hero.getR() + 1][hero.getC() - i].equals("*")) {
+                            int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
+                            int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
+                            walls.add(new Wall(x, y));
+                        }
+                        break;
                 }
-                break;
+            } catch (ArrayIndexOutOfBoundsException e) {
+                System.out.println("Out of bounds");
+            }
         }
     }
 
