@@ -19,7 +19,7 @@ public class MazeProgram extends JPanel implements KeyListener {
     public MazeProgram(){
         frame = new JFrame("Maze");
         frame.add(this);
-        frame.setSize(800, 800);
+        frame.setSize(1000, 800);
 
         setMaze();
         frame.addKeyListener(this);
@@ -187,6 +187,12 @@ public class MazeProgram extends JPanel implements KeyListener {
         int[] y = {100 + 50*i, 100 + 50*i, 550-50*i, 550-50*i};
         walls.add(new Wall(x, y));
     }
+    //build right wall
+    public void rightWall(int i){
+        int[] x = {700 - 50*i, 650 - 50*i, 650 - 50*i, 700 - 50*i};
+        int[] y = {100 + 50*i, 100 + 50*i, 550-50*i, 550-50*i};
+        walls.add(new Wall(x, y));
+    }
 
     public class Wall{
         int[] x;
@@ -206,6 +212,7 @@ public class MazeProgram extends JPanel implements KeyListener {
         walls = new ArrayList<Wall>();
         for(int i = 0; i < 5; i++){
             leftWall(i);
+            rightWall(i);
         }
         int r = hero.getR();
         int c = hero.getC();
@@ -213,29 +220,57 @@ public class MazeProgram extends JPanel implements KeyListener {
             try {
                 switch (hero.getDirection()) {
                     case 'E':
+                        //leftwall
                         if (maze[hero.getR() - 1][hero.getC() + i].equals("*")) {
                             int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
                             walls.add(new Wall(x, y));
                         }
+                        //right wall
+                        if (maze[hero.getR() + 1][hero.getC() + i].equals("*")) {
+                            int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
+                            int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
+                            walls.add(new Wall(x, y));
+                        }
                         break;
                     case 'N':
+                        //leftwall
                         if (maze[hero.getR() - i][hero.getC() - 1].equals("*")) {
                             int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
                             walls.add(new Wall(x, y));
                         }
+                        //right wall
+                        if (maze[hero.getR() - i][hero.getC() + 1].equals("*")) {
+                            int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
+                            int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
+                            walls.add(new Wall(x, y));
+                        }
                         break;
                     case 'S':
+                        //left wall
                         if (maze[hero.getR() + i][hero.getC() + 1].equals("*")) {
                             int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
                             walls.add(new Wall(x, y));
                         }
+                        //right wall
+                        if (maze[hero.getR() + i][hero.getC() - 1].equals("*")) {
+                            int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
+                            int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
+                            walls.add(new Wall(x, y));
+                        }
                         break;
                     case 'W':
+                        //left wall
                         if (maze[hero.getR() + 1][hero.getC() - i].equals("*")) {
                             int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
+                            int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
+                            walls.add(new Wall(x, y));
+                        }
+                        //right wall
+                        if (maze[hero.getR() - 1][hero.getC() - i].equals("*")) {
+                            int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
                             walls.add(new Wall(x, y));
                         }
@@ -251,7 +286,7 @@ public class MazeProgram extends JPanel implements KeyListener {
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         g.setColor(new Color(100,150,0));
-        g.fillRect(0,0,800,800);
+        g.fillRect(0,0,1000,800);
         g.setColor(Color.WHITE);
         if(in2D) {
             for (int i = 0; i < maze.length; i++) {
