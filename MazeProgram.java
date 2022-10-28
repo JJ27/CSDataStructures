@@ -1,14 +1,14 @@
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
-import java.io.IOException;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.StringTokenizer;
 
 public class MazeProgram extends JPanel implements KeyListener {
     JFrame frame;
@@ -19,7 +19,7 @@ public class MazeProgram extends JPanel implements KeyListener {
     int[] scolor = new int[]{180,180,180};
 
     ArrayList<Wall> walls = new ArrayList<Wall>();
-    boolean in2D;
+    boolean in2D = true;
     public MazeProgram(){
         frame = new JFrame("Maze");
         frame.add(this);
@@ -170,44 +170,42 @@ public class MazeProgram extends JPanel implements KeyListener {
                     }
                     break;
             }
-            System.out.println(r + " " + c + " " + direction);
-        }
-    }
-    //prints 2D array
-    public void printMaze(){
-        for(int i = 0; i < maze.length; i++){
-            for(int j = 0; j < maze[i].length; j++){
-                System.out.print(maze[i][j]);
-            }
-            System.out.println();
         }
     }
 
     public static void main(String[] args) {
         new MazeProgram();
     }
-
+    int scale = 50;
     public void leftWall(int i){
         int[] x = {100 + 50*i, 150 + 50*i, 150 + 50*i, 100 + 50*i};
-        int[] y = {100 + 50*i, 100 + 50*i, 550-50*i, 550-50*i};
+        int[] y = {100 + scale*i, 100 + scale*i, 550-scale*i, 550-scale*i};
         walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "left"));
     }
     //build right wall
     public void rightWall(int i){
         int[] x = {700 - 50*i, 650 - 50*i, 650 - 50*i, 700 - 50*i};
-        int[] y = {100 + 50*i, 100 + 50*i, 550-50*i, 550-50*i};
+        int[] y = {100 + scale*i, 100 + scale*i, 550-scale*i, 550-scale*i};
         walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
     }
     //build top wall
     public void topWall(int i){
-        int[] x = {100 + 50*i, 700 - 50*i, 700 - 50*i, 100 + 50*i};
-        int[] y = {100 + 50*i, 100 + 50*i, 150 + 50*i, 150 + 50*i};
+        int[] y = new int[]{100 + 50 * i, 100 + 50 * i, 150 + 50 * i, 150 + 50 * i};
+        int[] x;
+        if(i != -1)
+            x = new int[]{100 + 50 * i, 700 - 50 * i, 700 - 50 * i, 100 + 50 * i};
+        else
+            x = new int[]{100, 700, 700, 100};
         walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i,"top"));
     }
     //build bottom wall
     public void bottomWall(int i){
-        int[] x = {100 + 50*i, 700 - 50*i, 700 - 50*i, 100 + 50*i};
+        int[] x;
         int[] y = {550 - 50*i, 550 - 50*i, 500 - 50*i, 500 - 50*i};
+        if(i != -1)
+            x = new int[]{100 + 50 * i, 700 - 50 * i, 700 - 50 * i, 100 + 50 * i};
+        else
+            x = new int[]{100, 700, 700, 100};
         walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i,"bottom"));
     }
 
@@ -257,7 +255,6 @@ public class MazeProgram extends JPanel implements KeyListener {
 
         //getPaint() returns GradientPaint object
         public GradientPaint getPaint(){
-            System.out.println(type);
             switch(type){
                 case "right":
                 case "left":
@@ -279,10 +276,10 @@ public class MazeProgram extends JPanel implements KeyListener {
             leftWall(i);
             rightWall(i);
             topWall(i);
-            /*if(i == 4) {
-                bottomWall(i+1);
-                topWall(i+1);
-            }*/
+            if(i == 0){
+                bottomWall(i-1);
+                topWall(i-1);
+            }
             bottomWall(i);
         }
         int r = hero.getR();
@@ -299,20 +296,26 @@ public class MazeProgram extends JPanel implements KeyListener {
                             int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
                             walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "left"));
+                        } else{
+                            int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
+                            int[] y = {100 + 50 * i, 100 + 50 * i, 550 - 50 * i, 550 - 50 * i};
+                            walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
                         }
                         //right wall
                         if (maze[hero.getR() + 1][hero.getC() + i].equals("*")) {
                             int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
                             walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
+                        } else{
+                            int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
+                            int[] y = {100 + 50 * i, 100 + 50 * i, 550 - 50 * i, 550 - 50 * i};
+                            walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
                         }
                         //front wall
                         if (maze[hero.getR()][hero.getC() + i].equals("*")) {
                             int[] x = {100 + 50 * i, 700 - 50 * i, 700 - 50 * i, 100 + 50 * i};
                             int[] y = {50 + 50 * i, 50 + 50 * i, 100 + WALLF[i], 100 + WALLF[i]};
-                            System.out.println("curri" + curri);
                             if(i < curri){
-                                System.out.println("i " + i);
                                 fwall = new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "front");
                                 curri = i;
                             }
@@ -324,11 +327,19 @@ public class MazeProgram extends JPanel implements KeyListener {
                             int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
                             walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "left"));
+                        } else{
+                            int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
+                            int[] y = {100 + 50 * i, 100 + 50 * i, 550 - 50 * i, 550 - 50 * i};
+                            walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
                         }
                         //right wall
                         if (maze[hero.getR() - i][hero.getC() + 1].equals("*")) {
                             int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
+                            walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
+                        } else{
+                            int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
+                            int[] y = {100 + 50 * i, 100 + 50 * i, 550 - 50 * i, 550 - 50 * i};
                             walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
                         }
                         //front wall
@@ -347,11 +358,19 @@ public class MazeProgram extends JPanel implements KeyListener {
                             int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
                             walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "left"));
+                        } else{
+                            int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
+                            int[] y = {100 + 50 * i, 100 + 50 * i, 550 - 50 * i, 550 - 50 * i};
+                            walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
                         }
                         //right wall
                         if (maze[hero.getR() + i][hero.getC() - 1].equals("*")) {
                             int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
+                            walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
+                        } else{
+                            int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
+                            int[] y = {100 + 50 * i, 100 + 50 * i, 550 - 50 * i, 550 - 50 * i};
                             walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
                         }
                         //front wall
@@ -370,11 +389,19 @@ public class MazeProgram extends JPanel implements KeyListener {
                             int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
                             walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "left"));
+                        } else{
+                            int[] x = {100 + 50 * i, 150 + 50 * i, 150 + 50 * i, 100 + 50 * i};
+                            int[] y = {100 + 50 * i, 100 + 50 * i, 550 - 50 * i, 550 - 50 * i};
+                            walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
                         }
                         //right wall
                         if (maze[hero.getR() - 1][hero.getC() - i].equals("*")) {
                             int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
                             int[] y = {50 + 50 * i, 100 + 50 * i, 550 - 50 * i, 600 - 50 * i};
+                            walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
+                        } else{
+                            int[] x = {700 - 50 * i, 650 - 50 * i, 650 - 50 * i, 700 - 50 * i};
+                            int[] y = {100 + 50 * i, 100 + 50 * i, 550 - 50 * i, 550 - 50 * i};
                             walls.add(new Wall(x, y, scolor[0]-s*i, scolor[1]-s*i, scolor[2]-s*i, "right"));
                         }
                         //front wall
@@ -389,14 +416,12 @@ public class MazeProgram extends JPanel implements KeyListener {
                         break;
                 }
             } catch (ArrayIndexOutOfBoundsException e) {
-                e.printStackTrace();
             }
         }
         if(fwall != null){
             walls.add(fwall);
         }
     }
-
     @Override
     public void paintComponent(Graphics gi) {
         super.paintComponent(gi);
@@ -404,6 +429,20 @@ public class MazeProgram extends JPanel implements KeyListener {
         g.setColor(new Color(100,150,0));
         g.fillRect(0,0,1000,800);
         g.setColor(Color.WHITE);
+        Font currentFont = g.getFont();
+        Font newFont = currentFont.deriveFont(currentFont.getSize() * 8F);
+        g.setFont(newFont);
+        BufferedImage trophy = null;
+        try {
+            trophy = ImageIO.read(new File("trophy.png"));
+        } catch (IOException e) {
+        }
+        if(hero.getC() == 29 && hero.getR() == 29){
+            g.drawImage(trophy, 790, 450, 200,200,this);
+            g.drawString("Congrats!", 155, 720);
+        } else{
+            g.drawString("" + hero.getDirection(), 750, 100);
+        }
         if(in2D) {
             for (int i = 0; i < maze.length; i++) {
                 for (int j = 0; j < maze[i].length; j++) {
@@ -411,11 +450,33 @@ public class MazeProgram extends JPanel implements KeyListener {
                         g.setColor(Color.BLACK);
                         g.fillRect(j * 10, i * 10, 10, 10);
                     }
+                    if(i == 29 && j == 29){
+                        g.setColor(Color.YELLOW);
+                        g.fillRect(j * 10, i * 10, 10, 10);
+                    }
                 }
             }
             g.setColor(Color.WHITE);
             g.fillOval(hero.getC() * 10, hero.getR() * 10, 10, 10);
         } else{
+            int i0 = hero.getR()-10;
+            int j0 = hero.getC()-10;
+            for (int i = i0; i < i0+20; i++) {
+                for (int j = j0; j < j0+20; j++) {
+                    try{
+                        if (maze[i][j].equals("*")) {
+                            g.setColor(Color.BLACK);
+                            g.fillRect(750 + (j-j0) * 10, 200 + (i-i0) * 10, 10, 10);
+                        }
+                        if(i == 29 && j == 29){
+                            g.setColor(Color.YELLOW);
+                            g.fillRect(750 + (j-j0) * 10, 200 + (i-i0) * 10, 10, 10);
+                        }
+                    } catch (ArrayIndexOutOfBoundsException e){}
+                }
+            }
+            g.setColor(Color.WHITE);
+            g.fillOval(850, 300, 10, 10);
             for(Wall w: walls){
                 g.setPaint(w.getPaint());
                 g.fillPolygon(w.getPoly());
@@ -426,29 +487,31 @@ public class MazeProgram extends JPanel implements KeyListener {
     }
 
     public void setMaze(){
-        maze = new String[30][0];
-        File filename = new File("MazeDesign.txt");
-        try {
-            BufferedReader input = new BufferedReader(new FileReader(filename));
-            String text;
-            boolean first = true;
-            int i = -1;
-            while ((text = input.readLine()) != null) {
-                if(first){
-                    String[] pieces = text.split(" ");
-                    int r = Integer.parseInt(pieces[0]);
-                    int c = Integer.parseInt(pieces[1]);
-                    char direction = pieces[2].charAt(0);
-                    endR = Integer.parseInt(pieces[3]);
-                    endC = Integer.parseInt(pieces[4]);
-                    hero = new Hero(r, c, direction);
-                    first = false;
-                } else
-                    maze[i] = text.split("");
-                i++;
+        maze = new String[31][31];
+        hero = new Hero(1,1,'E');
+        endR = 29;
+        endC = 29;
+        String s = (new MazeMaker(15,15)).send();
+        s = s.replaceAll("\n","");
+        StringTokenizer st = new StringTokenizer(s, "+,-,|, ,\n", true);
+        for(int i = 0; i < 31; i++){
+            for(int j = 0; j < 31; j++){
+                String sp = st.nextToken();
+                switch(sp) {
+                    case "+":
+                        maze[i][j] = "*";
+                        break;
+                    case "-":
+                        maze[i][j] = "*";
+                        break;
+                    case "|":
+                        maze[i][j] = "*";
+                        break;
+                    case " ":
+                        maze[i][j] = " ";
+                        break;
+                }
             }
-        } catch (IOException io) {
-            System.err.println("File error");
         }
     }
 }

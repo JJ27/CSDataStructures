@@ -32,13 +32,19 @@ public class Reducer {
         String[] pieces = fraction.split("/");
         int numerator = Integer.parseInt(pieces[0]);
         int denominator = Integer.parseInt(pieces[1]);
+        if(numerator == 0){
+            return "0";
+        }
+        if(denominator == 0){
+            return "Undefined";
+        }
         int whole = numerator/denominator;
         int newNumerator = numerator%denominator;
         int gcd = gcf(newNumerator, denominator);
         if(whole == 0){
             return newNumerator/gcd + "/" + denominator/gcd;
         }
-        return whole + " " + newNumerator/gcd + "/" + denominator/gcd;
+        return (newNumerator/gcd == 0) ? whole + "" : whole + " " + newNumerator/gcd + "/" + denominator/gcd;
     }
 
     public static int gcf(int a, int b) { return b==0 ? a : gcf(b, a%b); }
