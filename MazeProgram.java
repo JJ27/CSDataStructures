@@ -16,6 +16,7 @@ public class MazeProgram extends JPanel implements KeyListener {
     Hero hero;
     int endR, endC;
     int s = 40;
+    int moves = 0;
     int[] scolor = new int[]{180,180,180};
 
     ArrayList<Wall> walls = new ArrayList<Wall>();
@@ -117,6 +118,7 @@ public class MazeProgram extends JPanel implements KeyListener {
                             try{
                                 if(maze[r-1][c].equals(" ")){
                                     r--;
+                                    moves++;
                                 }
                             } catch (ArrayIndexOutOfBoundsException e){
                                 System.out.println("Out of bounds");
@@ -126,6 +128,7 @@ public class MazeProgram extends JPanel implements KeyListener {
                             try{
                                 if(maze[r][c+1].equals(" ")){
                                     c++;
+                                    moves++;
                                 }
                             } catch (ArrayIndexOutOfBoundsException e){
                                 System.out.println("Out of bounds");
@@ -136,6 +139,7 @@ public class MazeProgram extends JPanel implements KeyListener {
                             try{
                                 if(maze[r+1][c].equals(" ")){
                                     r++;
+                                    moves++;
                                 }
                             } catch (ArrayIndexOutOfBoundsException e){
                                 System.out.println("Out of bounds");
@@ -145,6 +149,7 @@ public class MazeProgram extends JPanel implements KeyListener {
                             try{
                                 if(maze[r][c-1].equals(" ")){
                                     c--;
+                                    moves++;
                                 }
                             } catch (ArrayIndexOutOfBoundsException e){
                                 System.out.println("Out of bounds");
@@ -439,9 +444,9 @@ public class MazeProgram extends JPanel implements KeyListener {
         }
         if(hero.getC() == 29 && hero.getR() == 29){
             g.drawImage(trophy, 790, 450, 200,200,this);
-            g.drawString("Congrats!", 155, 720);
+            g.drawString("Congrats! " + moves, 155, 720);
         } else{
-            g.drawString("" + hero.getDirection(), 750, 100);
+            g.drawString("" + hero.getDirection() + " " + moves, 600, 100);
         }
         if(in2D) {
             for (int i = 0; i < maze.length; i++) {
