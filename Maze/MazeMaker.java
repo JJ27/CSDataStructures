@@ -1,3 +1,5 @@
+package Maze;
+
 import java.util.*;
 public class MazeMaker {
     //using recursive backtracking algorithm

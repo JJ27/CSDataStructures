@@ -1,3 +1,5 @@
+package Maze;
+
 import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
@@ -7,7 +9,6 @@ import java.awt.image.BufferedImage;
 import java.io.*;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.StringTokenizer;
 
 public class MazeProgram extends JPanel implements KeyListener {
@@ -439,7 +440,7 @@ public class MazeProgram extends JPanel implements KeyListener {
         g.setFont(newFont);
         BufferedImage trophy = null;
         try {
-            trophy = ImageIO.read(new File("trophy.png"));
+            trophy = ImageIO.read(new File("Maze/trophy.png"));
         } catch (IOException e) {
         }
         if(hero.getC() == 29 && hero.getR() == 29){

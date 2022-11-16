@@ -38,38 +38,44 @@ public class Matrix {
     }
     public static void main(String[] args){
         Matrix temp = new Matrix();
-        int[][] m1 = stringTo2D(pieces.get(0));
-        int[][] m2 = stringTo2D(pieces.get(1));
+        for(int i = 0; i < pieces.size(); i+=2) {
+            int[][] m1 = new int[0][], m2 = new int[0][];
+            try {
+                m1 = stringTo2D(pieces.get(i));
+                m2 = stringTo2D(pieces.get(i + 1));
+            } catch (ArrayIndexOutOfBoundsException e) {}
 
-        System.out.println("Matrix 1:");
-        try{
-            print(m1);
-        } catch (Exception e){
-            System.out.println("Operation Not Possible!");
-        }
-        System.out.println("Matrix 2:");
-        try{
-            print(m2);
-        } catch (Exception e){
-            System.out.println("Operation Not Possible!");
-        }
-        System.out.println("Matrix 1 + Matrix 2:");
-        try{
-            print(sum(m1, m2));
-        } catch (Exception e){
-            System.out.println("Operation Not Possible!");
-        }
-        System.out.println("Matrix 1 - Matrix 2:");
-        try{
-            print(subtract(m1, m2));
-        } catch (Exception e){
-            System.out.println("Operation Not Possible!");
-        }
-        System.out.println("Matrix 1 * Matrix 2:");
-        try{
-            print(multiply(m1, m2));
-        } catch (Exception e){
-            System.out.println("Operation Not Possible!");
+            System.out.println("Matrix 1:");
+            try {
+                print(m1);
+            } catch (Exception e) {
+                System.out.println("Operation Not Possible!");
+            }
+            System.out.println("Matrix 2:");
+            try {
+                print(m2);
+            } catch (Exception e) {
+                System.out.println("Operation Not Possible!");
+            }
+            System.out.println("Matrix 1 + Matrix 2:");
+            try {
+                print(sum(m1, m2));
+            } catch (Exception e) {
+                System.out.println("Operation Not Possible!");
+            }
+            System.out.println("Matrix 1 - Matrix 2:");
+            try {
+                print(subtract(m1, m2));
+            } catch (Exception e) {
+                System.out.println("Operation Not Possible!");
+            }
+            System.out.println("Matrix 1 * Matrix 2:");
+            try {
+                print(multiply(m1, m2));
+            } catch (Exception e) {
+                System.out.println("Operation Not Possible!");
+            }
+            System.out.println("--------------------");
         }
     }
 
@@ -128,5 +134,4 @@ public class Matrix {
         }
         return arr;
     }
-
 }
