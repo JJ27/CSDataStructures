@@ -1,5 +1,4 @@
 import java.util.EmptyStackException;
-import java.util.List;
 
 public class SuperList<E> {
     ListNode<E> root, end;
@@ -32,8 +31,8 @@ public class SuperList<E> {
             throw new EmptyStackException();
         }
         E data = end.getValue();
-        end = end.getPrevious();
         end.setNext(null);
+        end = end.getPrevious();
         size--;
         return data;
     }
@@ -162,6 +161,19 @@ public class SuperList<E> {
         }
         size--;
         return data;
+    }
+
+    public void reverse(){
+        ListNode<E> node = root;
+        while(node != null){
+            ListNode<E> temp = node.getNext();
+            node.setNext(node.getPrevious());
+            node.setPrevious(temp);
+            node = temp;
+        }
+        ListNode<E> temp = root;
+        root = end;
+        end = temp;
     }
 
     public class ListNode<E>{
