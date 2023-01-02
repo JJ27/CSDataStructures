@@ -4,6 +4,7 @@ import java.util.*;
 public class MazeMaker {
     //using recursive backtracking algorithm
     private final int x, y;
+
     private static int[][] maze = new int[0][0];
 
     public MazeMaker(int x, int y) {
