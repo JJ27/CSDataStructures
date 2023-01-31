@@ -29,6 +29,8 @@ public class Stacks {
     public static String decimalToBinary(int decimal){
         Stack<Integer> binary = new Stack<Integer>();
         String s = "";
+        if(decimal == 0)
+            return "0";
         while(decimal > 0){
             binary.push(decimal % 2);
             decimal /= 2;
@@ -97,6 +99,16 @@ public class Stacks {
                 int i = 5;
                 while(!data[i].contains("NA") && !data[i].contains("BBY")){
                     i++;
+                }
+                for(int p = 0; p < data.length; p++){
+                    if(data[p].contains("\"")){
+                        data[p] = data[p].substring(1) + data[p + 1].substring(0, data[p + 1].length() - 1);
+                        //remove data[p+1]
+                        for(int j = p + 1; j < data.length - 1; j++){
+                            data[j] = data[j + 1];
+                        }
+                        data[data.length - 1] = "";
+                    }
                 }
                 StarWarsChar character = new StarWarsChar(data[0], data[8], data[6], data[7], data[i]);
                 characters.add(character);
