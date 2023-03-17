@@ -1,5 +1,9 @@
 package BinarySearch;
 
+import BinarySearch.TreeNode;
+
+import java.util.ArrayList;
+
 public class TreeSet<E extends Comparable<E>> {
     private TreeNode<E> root;
     private int size;
@@ -64,9 +68,38 @@ public class TreeSet<E extends Comparable<E>> {
     public String preOrder(){
         toString = "[";
         preOrder(root);
-        toString = toString.substring(0, toString.length() - 2);
+        try {
+            toString = toString.substring(0, toString.length() - 2);
+        } catch(StringIndexOutOfBoundsException e) {
+            //do nothing
+        }
         toString += "]";
         return toString;
+    }
+
+    public void fill(ArrayList<E> list){
+        for(int i = 0; i < list.size(); i++){
+            add(list.get(i));
+        }
+    }
+
+    public int[] toArray(String s){
+        s = s.substring(1, s.length() - 1);
+        s = s.replaceAll(" ", "");
+        String[] temp = s.split(",");
+        int[] array = new int[temp.length];
+        for(int i = 0; i < temp.length; i++){
+            array[i] = Integer.parseInt(temp[i]);
+        }
+        return array;
+    }
+
+    public TreeSet<E> fromArray(int[] arr){
+        TreeSet<E> tree = new TreeSet<E>();
+        for(int i = 0; i < arr.length; i++){
+            tree.add((E)Integer.valueOf(arr[i]));
+        }
+        return tree;
     }
 
     //inOrder traversal
@@ -81,7 +114,11 @@ public class TreeSet<E extends Comparable<E>> {
     public String inOrder(){
         toString = "[";
         inOrder(root);
-        toString = toString.substring(0, toString.length() - 2);
+        try {
+            toString = toString.substring(0, toString.length() - 2);
+        } catch(StringIndexOutOfBoundsException e) {
+            //do nothing
+        }
         toString += "]";
         return toString;
     }
@@ -98,21 +135,40 @@ public class TreeSet<E extends Comparable<E>> {
     public String postOrder(){
         toString = "[";
         postOrder(root);
-        toString = toString.substring(0, toString.length() - 2);
+        try{
+            toString = toString.substring(0, toString.length() - 2);
+        } catch(StringIndexOutOfBoundsException e) {
+            //do nothing
+        }
         toString += "]";
         return toString;
     }
 
     //rotate right
-    public TreeNode<E> rotateRight(TreeNode<E> node){
-        TreeNode<E> temp = node.left;
-        node.left = temp.right;
-        temp.right = node;
-        return temp;
+    public void rotateRight(TreeNode<E> node){
+        if (root != null && root.getLeft() != null) {
+            TreeNode<E> temp = root.getLeft();
+            root.setLeft(temp.getRight());
+            temp.setRight(root);
+            root = temp;
+        }
     }
 
     public void rotateRight(){
-        root = rotateRight(root);
+        rotateRight(root);
+    }
+
+    public TreeNode<E> rotateLeft(TreeNode<E> node){
+        TreeNode<E> temp = node.getRight();
+        node.right = temp.getLeft();
+        temp.left = node;
+        return temp;
+    }
+
+    public void rotateLeft(){
+        if(root != null && root.left != null)
+            root = rotateLeft(root);
+        return;
     }
 
     public int size(TreeNode<E> node){
