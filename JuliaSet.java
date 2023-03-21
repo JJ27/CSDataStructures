@@ -8,12 +8,15 @@ import java.awt.image.BufferedImage;
 public class JuliaSet extends JPanel implements AdjustmentListener
 {
     JFrame frame;
-    JScrollBar A, B;
-    JLabel aLabel, bLabel;
+    JScrollBar A, B, saturationBar, brightnessBar, zoomBar;
+    JLabel aLabel, bLabel, saturationLabel, brightnessLabel, zoomLabel;
     double a, b;
     JPanel scrollPanel, labelPanel, kingPanel;
     BufferedImage image;
-    int zoom = 1;
+    double zoom = 1;
+    double saturation = 1;
+    double brightness = 1;
+    double shape = 1;
     public JuliaSet()
     {
         //Main JFrame
@@ -29,20 +32,34 @@ public class JuliaSet extends JPanel implements AdjustmentListener
         A.addAdjustmentListener(this);
         B = new JScrollBar(JScrollBar.HORIZONTAL, 0, 0, -2000, 2000);
         B.addAdjustmentListener(this);
+        saturationBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 0, -2000, 2000);
+        saturationBar.addAdjustmentListener(this);
+        brightnessBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 0, -2000, 2000);
+        brightnessBar.addAdjustmentListener(this);
+        zoomBar = new JScrollBar(JScrollBar.HORIZONTAL, 0, 0, -2000, 2000);
+        zoomBar.addAdjustmentListener(this);
         //add scrollbars to panel
         scrollPanel.add(A);
         scrollPanel.add(B);
-
+        scrollPanel.add(saturationBar);
+        scrollPanel.add(brightnessBar);
+        scrollPanel.add(zoomBar);
         //panel for labels
         labelPanel = new JPanel();
         labelPanel.setPreferredSize(new Dimension(100, 50));
-        labelPanel.setLayout(new GridLayout(2, 1)); //3 rows for 3 labels
+        labelPanel.setLayout(new GridLayout(6, 1)); //3 rows for 3 labels
         //labels for each value
         aLabel = new JLabel("A: " + A.getValue()/1000.0);
         bLabel = new JLabel("B: " + B.getValue()/1000.0);
+        saturationLabel = new JLabel("Saturation: " + saturationBar.getValue()/1000.0);
+        brightnessLabel = new JLabel("Brightness: " + brightnessBar.getValue()/1000.0);
+        zoomLabel = new JLabel("Zoom: " + zoomBar.getValue()/1000.0);
         //add labels to panel
         labelPanel.add(aLabel);
         labelPanel.add(bLabel);
+        labelPanel.add(saturationLabel);
+        labelPanel.add(brightnessLabel);
+        labelPanel.add(zoomLabel);
 
         //big panel
         kingPanel = new JPanel();
@@ -63,7 +80,7 @@ public class JuliaSet extends JPanel implements AdjustmentListener
         //g.fillRect(0, 0, frame.getWidth(), frame.getHeight());
         g.drawImage(drawJulia(), 0, 0, null);
     }
-    public BufferedImage drawJulia()
+    /*public BufferedImage drawJulia()
     {
         int w = frame.getWidth();
         int h = frame.getHeight();
@@ -91,6 +108,35 @@ public class JuliaSet extends JPanel implements AdjustmentListener
             }
         }
         return image;
+    }*/
+    //write drawJulia() method with saturation, zoom, brightness, and shape
+    public BufferedImage drawJulia(){
+        int w = frame.getWidth();
+        int h = frame.getHeight();
+        image = new BufferedImage(w, h, BufferedImage.TYPE_INT_RGB);
+        for (int x = 0; x < w; x++)
+        {
+            for (int y = 0; y < h; y++)
+            {
+                double zx = 1.5*(x - w/2.0)/(0.5*zoom*w);
+                double zy = (y - h/2.0)/(0.5*zoom*h);
+                float i = 200;
+                while ((zx*zx + zy*zy < 6) && (i > 0))
+                {
+                    double tmp = zx*zx - zy*zy + a;
+                    zy = 2.0*zx*zy + b;
+                    zx = tmp;
+                    i--;
+                }
+                int c;
+                if(i>0)
+                    c = Color.HSBtoRGB((300 / i) % 1, (float) saturation, (float) brightness); //outside colors
+                else
+                    c = Color.HSBtoRGB(0.33f, (float) saturation, (float) brightness); //eye color
+                image.setRGB(x, y, c);
+            }
+        }
+        return image;
     }
     @Override
     public void adjustmentValueChanged(AdjustmentEvent e) {
@@ -105,8 +151,22 @@ public class JuliaSet extends JPanel implements AdjustmentListener
             b = B.getValue()/1000.0;
             bLabel.setText("B: " + b);
         }
+        else if (e.getSource() == saturationBar)
+        {
+            saturation = saturationBar.getValue()/1000.0;
+            saturationLabel.setText("Saturation: " + saturation);
+        }
+        else if (e.getSource() == brightnessBar)
+        {
+            brightness = brightnessBar.getValue()/1000.0;
+            brightnessLabel.setText("Brightness: " + brightness);
+        }
+        else if (e.getSource() == zoomBar)
+        {
+            zoom = zoomBar.getValue()/1000.0;
+            zoomLabel.setText("Zoom: " + zoom);
+        }
         repaint();
-
     }
     public static void main(String[]args)
     {
