@@ -24,6 +24,7 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
     ArrayList<Clip> clips = new ArrayList<Clip>();
     String[] instrumentsList = {"Bell", "Glockenspiel", "Marimba", "Oboe", "Vocals", "Piano"};
     Thread timer;
+    String message;
     int count = 0;
     boolean playing = false;
     int speed = 280;
@@ -32,6 +33,7 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
     Character[][] currSong;
 
     public MusicBox(){
+        message = "";
         try{
             UIManager.setLookAndFeel("javax.swing.plaf.metal.MetalLookAndFeel");
 
@@ -39,7 +41,7 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
             System.out.println("Error setting native LAF: " + e);
         }
         setTitle("Music Box");
-        notes = new ArrayList<String>(Arrays.asList("C4", "B3", "A#3", "A3", "G#3", "G3", "F#3", "F3", "E3", "D#3", "D3", "C#3", "C3", "B2", "A#2", "A2", "G#2", "G2", "F#2", "F2", "E2", "D#2", "D2", "C#2", "C2", "B1", "A#1", "A1", "G#1", "G1", "F#1", "F1", "E1", "D#1", "D1", "C#1", "C1"));
+        notes = new ArrayList<String>(Arrays.asList("C4", "B3", "A#3", "A3", "G#3", "G3", "F#3", "F3", "E3", "D#3", "D3", "C#3", "C3", "B2", "A#2", "A2", "G#2", "G2", "F#2", "F2", "E2", "D#2", "D2", "C#2", "C2", "B1", "A#1", "A1", "G#1", "G1", "F#1", "F1", "E1", "D#1", "D1", "C#1", "C0"));
         int rows = 37;
         int cols = 50;
         if(buttoncontrol != null){
@@ -66,7 +68,7 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
             }
         }
         scrollpane = new JScrollPane(buttoncontrol, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        this.add(scrollpane);
+        //this.add(scrollpane);
 
         buttoncontrol = new JPanel();
         buttoncontrol.setLayout(new GridLayout(1, 2));
@@ -136,10 +138,10 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
         buttoncontrol.add(play);
         buttoncontrol.add(clear);
         buttoncontrol.add(reset);
-        menu.add(file);
-        menu.add(instruments);
-        menu.add(buttoncontrol);
-        menu.add(add);
+        menu.add(file, BorderLayout.CENTER);
+        menu.add(instruments, BorderLayout.CENTER);
+        menu.add(buttoncontrol, BorderLayout.CENTER);
+        menu.add(add, BorderLayout.CENTER);
         this.add(speedBar, BorderLayout.SOUTH);
         this.setJMenuBar(menu);
         this.add(scrollpane);
@@ -149,6 +151,9 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
         timer.start();
     }
     public void setInstrument(String instrument){
+        clips.clear();
+        if(instrument.equals("Vocals"))
+            instrument = "oh_ah";
         try {
             for (int i = 0; i < notes.size(); i++) {
                 String n = notes.get(i).replaceAll("#", "Sharp");
@@ -195,12 +200,14 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
             count = 0;
             playing = false;
             play.setText("Play");
+            play.setSelected(false);
         } else if(e.getSource() == bell){
             setInstrument("Bell");
         } else if(e.getSource() == glock){
             setInstrument("Glockenspiel");
         } else if(e.getSource() == marimba){
             setInstrument("Marimba");
+            message = "Marimba";
         } else if(e.getSource() == oboe){
             setInstrument("Oboe");
         } else if(e.getSource() == vocals){
@@ -219,13 +226,13 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
                         loc += ".txt";
                     }
                     String song = "";
-                    String[] notenames = {" ", "c ", "b ", "a-", "a ", "g-", "g ", "f-", "f ", "e ", "d-", "d ", "c-", "c ", "b ", "a-", "a ","g-", "g ", "f-", "f ", "e ", "d-","d ","c-","c ", "b ", "a-", "a ", "g-", "g ", "f-","f ", "e ", "d-","d ", "c-", "c "};
-                    for(int i = 0; i < buttons.length; i++){
-                        if(i == 0) {
+                    String[] notenames = {" ","c ", "b ", "a-", "a ", "g-", "g ", "f-", "f ", "e ", "d-", "d ", "c-", "c ", "b ", "a-", "a ","g-", "g ", "f-", "f ", "e ", "d-","d ","c-","c ", "b ", "a-", "a ", "g-", "g ", "f-","f ", "e ", "d-","d ", "c-", "c "};
+                    for(int i = -1; i < buttons.length; i++){
+                        if(i == -1) {
                             song += speed + " " + buttons[0].length + "\n";
                             continue;
                         }
-                        song += notenames[i] + " ";
+                        song += notenames[i+1] + " ";
                         for(int j = 0; j < buttons[i].length; j++){
                             if(buttons[i][j].isSelected()){
                                 song += "x";
@@ -282,9 +289,10 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
                     currSong = new Character[rows][cols];
                     int iterator = 0;
                     while((line = in.readLine()) != null){
-                        for(int i = 0; i < cols; i++){
-                            currSong[iterator][i] = line.charAt(i+2);
+                        for(int i = 0; i < rows; i++){
+                            currSong[i][iterator] = line.charAt(i+3);
                         }
+                        iterator++;
                     }
                     resetNotes(currSong);
                 } catch(IOException ex){
@@ -292,36 +300,86 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
                 }
             }
         }
-
+        //add column
+        else if(e.getSource() == addCol){
+            addCol(1);
+        } else if(e.getSource() == add10){
+            addCol(10);
+        } else if(e.getSource() == remCol){
+            addCol(-1);
+        } else if(e.getSource() == rem10){
+            addCol(-10);
+        }
+    }
+    public void addCol(int colsToAdd){
+        int rows = 37;
+        if(colsToAdd < 0) {
+            if (buttons[0].length + colsToAdd < 20) {
+                colsToAdd = 20 - buttons[0].length;
+            }
+        }
+        int cols = buttons[0].length + colsToAdd;
+        if(buttoncontrol != null){
+            scrollpane.remove(buttoncontrol);
+            this.remove(scrollpane);
+        }
+        if (cols < 0)
+            cols = 0;
+        buttoncontrol = new JPanel();
+        JToggleButton[][] buttons2 = new JToggleButton[rows][cols];
+        buttoncontrol.setLayout(new GridLayout(rows, cols));
+        for(int i = 0; i < rows; i++){
+            for(int j = 0; j < cols; j++){
+                buttons2[i][j] = new JToggleButton();
+                buttons2[i][j].setBackground(Color.WHITE);
+                buttons2[i][j].setPreferredSize(new Dimension(40,40));
+                buttons2[i][j].setMinimumSize(new Dimension(40,40));
+                buttons2[i][j].setMaximumSize(new Dimension(40,40));
+                buttons2[i][j].setText(notes.get(i));
+                buttons2[i][j].setMargin(new Insets(0,0,0,0));
+                buttons2[i][j].setActionCommand(i + "," + j);
+                buttons2[i][j].addActionListener(this);
+                if(j < buttons[i].length)
+                    buttons2[i][j].setSelected(buttons[i][j].isSelected());
+                buttoncontrol.add(buttons2[i][j]);
+            }
+        }
+        buttons = buttons2;
+        scrollpane = new JScrollPane(buttoncontrol, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        this.add(scrollpane);
+        revalidate();
     }
     public void resetNotes(Character[][] notes){
+        message = "Reset Notes!";
         scrollpane.remove(buttoncontrol);
         this.remove(scrollpane);
         scrollpane = new JScrollPane(buttoncontrol, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
-        this.add(scrollpane, BorderLayout.CENTER);
         for(int i = 0; i < buttons.length; i++){
             for(int j = 0; j < buttons[i].length && j < notes[i].length; j++){
-                if(notes[i][j] == 'x'){
+                System.out.println(i + " " + j + " N: " + notes[i][j]);
+                if(notes[i][j] != null && notes[i][j] == 'x'){
                     buttons[i][j].setSelected(true);
-                } else {
-                    buttons[i][j].setSelected(false);
+                    //System.out.println("Selected: " + i + "," + j);
                 }
             }
         }
+        this.add(scrollpane, BorderLayout.CENTER);
         revalidate();
     }
     public void run(){
         while(true){
-            System.out.println("");
+            System.out.println(message);
             try{
                 if(playing){
                     for(int i = 0; i < buttons.length; i++){
                         if(buttons[i][count].isSelected()){
                             clips.get(i).start();
-                            buttons[i][count].setBackground(Color.GREEN);
+                            //buttons[i][count].setBackground(Color.GREEN);
                         }
                     }
-                    timer.sleep(speed);
+                    if(560 - speed <= 0)
+                        speed = 550;
+                    timer.sleep(560 - speed);
                     for(int i = 0; i < buttons.length; i++){
                         if(buttons[i][count].isSelected()){
                             clips.get(i).stop();
