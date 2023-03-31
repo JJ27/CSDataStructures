@@ -133,8 +133,18 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
         add.add(rem10);
 
         setInstrument("Bell");
-        speedBar = new JScrollBar(JScrollBar.HORIZONTAL, 280, 0, 50, 350);
+        speedBar = new JScrollBar(JScrollBar.HORIZONTAL, 280, 0, 50, 550);
         speedBar.addAdjustmentListener(this);
+        speedBar.setPreferredSize(new Dimension(1400, 20));
+        JLabel speedLabel = new JLabel("Speed:");
+        JPanel speedPanel = new JPanel();
+        speedPanel.add(speedBar);
+        JPanel speedLabelPanel = new JPanel();
+        speedLabelPanel.add(speedLabel);
+        JPanel masterBottom = new JPanel();
+        masterBottom.setLayout(new BorderLayout());
+        masterBottom.add(speedLabelPanel, BorderLayout.WEST);
+        masterBottom.add(speedPanel, BorderLayout.CENTER);
         buttoncontrol.add(play);
         buttoncontrol.add(clear);
         buttoncontrol.add(reset);
@@ -142,7 +152,7 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
         menu.add(instruments, BorderLayout.CENTER);
         menu.add(buttoncontrol, BorderLayout.CENTER);
         menu.add(add, BorderLayout.CENTER);
-        this.add(speedBar, BorderLayout.SOUTH);
+        this.add(masterBottom, BorderLayout.SOUTH);
         this.setJMenuBar(menu);
         this.add(scrollpane);
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
@@ -287,12 +297,19 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
                     scrollpane = new JScrollPane(buttoncontrol, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
                     this.add(scrollpane);
                     currSong = new Character[rows][cols];
-                    int iterator = 0;
-                    while((line = in.readLine()) != null){
+                    //int iterator = 0;
+                    /*while((line = in.readLine()) != null){
                         for(int i = 0; i < rows; i++){
-                            currSong[i][iterator] = line.charAt(i+3);
+                            currSong[iterator][i] = line.charAt(i+3);
+                            System.out.println(iterator + " " + i + " N: " + currSong[iterator][i] + " " + line.charAt(i+3));
                         }
                         iterator++;
+                    }*/
+                    for(int i = 0; i < rows; i++){
+                        line = in.readLine();
+                        for(int j = 0; j < cols; j++){
+                            currSong[i][j] = line.charAt(j+3);
+                        }
                     }
                     resetNotes(currSong);
                 } catch(IOException ex){
@@ -356,7 +373,7 @@ public class MusicBox extends JFrame implements Runnable, ActionListener, Adjust
         scrollpane = new JScrollPane(buttoncontrol, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS, JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
         for(int i = 0; i < buttons.length; i++){
             for(int j = 0; j < buttons[i].length && j < notes[i].length; j++){
-                System.out.println(i + " " + j + " N: " + notes[i][j]);
+                //System.out.println(i + " " + j + " N: " + notes[i][j]);
                 if(notes[i][j] != null && notes[i][j] == 'x'){
                     buttons[i][j].setSelected(true);
                     //System.out.println("Selected: " + i + "," + j);
